@@ -22,7 +22,8 @@ jobs:
             --name influx_container \
             --detach \
             influxdb
-          docker logs influx_container
+      - name: Show logs
+        run: docker logs influx_container
 
       - name: Setup the container
         run: |
