@@ -15,31 +15,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Run InfluxDb container
-        run: |
-          docker run \
-            -p 127.0.0.1:8086:8086 \
-            --name influx_container \
-            --detach \
-            influxdb
-      - name: Show logs
-        run: docker logs influx_container
-
-      - name: Setup the container
-        run: |
-          docker exec influx_container influx setup \
-               --username influx \
-               --password password \
-               --org home \
-               --bucket octopus
-
-      - name: Create an API key
-        run: |
-          docker exec influxdb2 influx auth create \
-               --write-buckets
-
       - name: Install the package
         run: pip install .
 
-      - name: Run octopus-influx
-        run: octopus-influx
+      - name: Run InfluxDb container
+        run: |
+          docker run \
+            -p 8086:8086 \
+            -e DOCKER_INFLUXDB_INIT_USERNAME=github \
+            -e DOCKER_INFLUXDB_INIT_PASSWORD=password \
+            -e DOCKER_INFLUXDB_INIT_ORG=home \
+            -e DOCKER_INFLUXDB_INIT_BUCKET=octopus \
+            -e DOCKER_INFLUXDB_INIT_MODE=setup \
+            --name influx_container \
+            --detach \
+            influxdb:latest
+          docker exec influx_container influx auth create \
+               --write-buckets
+          docker logs influx_container
