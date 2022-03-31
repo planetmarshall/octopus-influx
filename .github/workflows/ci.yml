@@ -19,13 +19,14 @@ jobs:
         run: |
           docker run \
             -p 127.0.0.1:8086:8086 \
-            --name influxdb2 \
+            --name influx_container \
             --detach \
             influxdb
+          docker logs influx_container
 
       - name: Setup the container
         run: |
-          docker exec influxdb2 influx setup \
+          docker exec influx_container influx setup \
                --username influx \
                --password password \
                --org home \
